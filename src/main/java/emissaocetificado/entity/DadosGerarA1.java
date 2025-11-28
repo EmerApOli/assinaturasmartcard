@@ -1,14 +1,13 @@
 package emissaocetificado.entity;
 
 
-import jakarta.persistence.Entity;
 import lombok.*;
 
 @Data
 @Builder
 @NoArgsConstructor // Gera o construtor padrão
 @AllArgsConstructor
-@Entity
+
 @EqualsAndHashCode(callSuper=false)
 public class DadosGerarA1 {
 
