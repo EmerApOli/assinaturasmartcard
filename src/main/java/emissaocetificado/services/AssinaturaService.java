@@ -43,7 +43,7 @@ public class AssinaturaService {
         Certificate[] certChain = ks.getCertificateChain(alias);
         X509Certificate certificate = (X509Certificate) certChain[0];
 
-        // 🔹 Extrai nome do assinante (CN)
+        // 🔹 nomeAssinante ainda é usado só para auditoria/log se quiser
         String nomeAssinante = extrairCN(certificate);
 
         ByteArrayOutputStream signedOut = new ByteArrayOutputStream();
@@ -51,31 +51,32 @@ public class AssinaturaService {
         try (PdfReader reader = new PdfReader(new ByteArrayInputStream(pdfBytes))) {
 
             PdfSigner signer = new PdfSigner(reader, signedOut, new StampingProperties().useAppendMode());
-
             PdfSignatureAppearance appearance = signer.getSignatureAppearance();
 
-            // 🔹 Retângulo pequeno no rodapé direito
-            Rectangle rect = new Rectangle(20, 20, 260, 200);
+
+            Rectangle rect = new Rectangle(20, 20, 160, 50);
 
             appearance
                     .setReason("Assinado digitalmente")
                     .setLocation("Brasil")
                     .setPageRect(rect)
-                    .setPageNumber(1)
-                    .setLayer2Text("Assinado digitalmente por: " + nomeAssinante)
-                    .setLayer2FontSize(9);
+                    .setPageNumber(1);
 
-            // 🔹 Carregar selo
             URL seloUrl = Thread.currentThread()
                     .getContextClassLoader()
                     .getResource("imagens/selo-assinatura.png");
 
             if (seloUrl != null) {
                 ImageData selo = ImageDataFactory.create(seloUrl);
+
+             
                 appearance.setSignatureGraphic(selo);
-                appearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC_AND_DESCRIPTION);
+                appearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.GRAPHIC);
+
             } else {
+
                 appearance.setRenderingMode(PdfSignatureAppearance.RenderingMode.DESCRIPTION);
+
             }
 
             signer.setFieldName("AssinaturaDigital");
@@ -98,7 +99,6 @@ public class AssinaturaService {
         return signedOut.toByteArray();
     }
 
-    // ✅ MÉTODO QUE FALTAVA
     private String extrairCN(X509Certificate cert) {
         String dn = cert.getSubjectX500Principal().getName(); // exemplo: CN=Fulano, OU=Depto, O=Empresa
         for (String part : dn.split(",")) {
