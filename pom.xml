@@ -125,6 +125,14 @@
             <artifactId>bcutil-jdk18on</artifactId>
         </dependency>
 
+
+        <dependency>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>bouncy-castle-adapter</artifactId>
+            <version>8.0.4</version>   <!-- mesma versão do itext7-core -->
+        </dependency>
+
+
         <!-- iText 8: núcleo PDF -->
         <dependency>
             <groupId>com.itextpdf</groupId>
